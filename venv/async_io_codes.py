@@ -1,6 +1,7 @@
 import serial
 import serial.tools.list_ports as port_lists
 import time
+import asyncio
 
 
 # Bonn shutter serial communication setup
@@ -21,61 +22,60 @@ import time
 
 
 # Get the list of available serial ports
-def list_ports():
-    ports = list(port_lists.comports())
+async def list_ports():
+    ports =   list(port_lists.comports())
     for p in ports: print(p)
 
 
 # Initializing the serial port for communication
-def init_serialport(port_name, baud_rate, byte_size):
-    serial_Port = serial.Serial(
+async def init_serialport(port_name, baud_rate, byte_size):
+    serial_Port =   serial.Serial(
         port=port_name, baudrate=baud_rate, bytesize=byte_size, timeout=2, stopbits=serial.STOPBITS_ONE
     )
-    time.sleep(2)
+    await asyncio.sleep(2)
     return serial_Port
 
 
 # this is to start an interactive session with the Bonn shutter
 # The input is the initialised serial port
 # this function should be called before communicating with the Bonn shutter
-def start_interactive_session(serialPort):
+
+async def start_interactive_session(serialPort):
     print('Starting interactive session - - - -')
     if not serialPort.isOpen():
         serialPort.open()
     else:
         pass
     serialPort.write(b'ia 1 <CR> \r\n')
-    time.sleep(5)
-
+    await asyncio.sleep(5)
 
 # Opening the ports
 # The input is the initialised serial port
-def open_shutter(serialPort):
+async def open_shutter(serialPort):
     print('opening shutter')
     if not serialPort.isOpen():
         serialPort.open()
     else:
         pass
     serialPort.write(b'os <CR> \r\n')
-    time.sleep(2)
+    await asyncio.sleep(2)
     return
 
 
 # Closing the port
 # input is the initialized serial port
-def close_shutter(serialPort):
+async def close_shutter(serialPort):
     print('closing shutter')
     if not serialPort.isOpen():
         serialPort.open()
     else:
         pass
     serialPort.write(b'cs <CR> \r\n')
-    time.sleep(2)
+    await asyncio.sleep(2)
     return
 
-
 # Resetting everything to the factory default value
-def reset_fd(serialPort):
+async def reset_fd(serialPort):
     # Reset everything to factory default
     print('Resetting everything to factory default value')
     if not serialPort.isOpen():
@@ -83,10 +83,10 @@ def reset_fd(serialPort):
     else:
         pass
     serialPort.write(b'fd <CR> \r\n')
-
+    await asyncio.sleep(2)
 
 # set the exposure time
-def set_exposure_time(serialPort, exp_time):
+async def set_exposure_time(serialPort, exp_time):
     # exp_time is the shutter open time
     print('Setting exposure time as', exp_time, 'ms')
     if not serialPort.isOpen():
@@ -100,9 +100,21 @@ def set_exposure_time(serialPort, exp_time):
         close_shutter(serialPort)
 
 
-list_ports()
-serialPort = init_serialport('COM7', 19200, 8)
-start_interactive_session(serialPort)
+
+async def main():
+    await list_ports()
+    serialPort = await init_serialport('COM7', 19200, 8)
+    await start_interactive_session(serialPort)
+    await open_shutter(serialPort)
+    await close_shutter(serialPort)
+    await set_exposure_time(serialPort, 300)
+
+
+asyncio.run(main())
+# serialPort = init_serialport('COM7', 19200, 8)
+
+
+'''start_interactive_session(serialPort)
 open_shutter(serialPort)
 close_shutter(serialPort)
-set_exposure_time(serialPort, 100)
+set_exposure_time(serialPort, 100)'''
