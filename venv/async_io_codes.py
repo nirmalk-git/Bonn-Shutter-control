@@ -1,6 +1,6 @@
 import serial
 import serial.tools.list_ports as port_lists
-import time
+# import time
 import asyncio
 
 
@@ -93,11 +93,11 @@ async def set_exposure_time(serialPort, exp_time):
         serialPort.open()
     if exp_time <= 1000:
         serialPort.write(b'ex ' + str(exp_time).encode('Ascii') + b'<CR> \r\n')
-        time.sleep(2)
+        await asyncio.sleep(2)
     else:
-        open_shutter(serialPort)
-        time.sleep((exp_time / 1000))
-        close_shutter(serialPort)
+        await open_shutter(serialPort)
+        await asyncio.sleep((exp_time / 1000))
+        await close_shutter(serialPort)
 
 
 
@@ -107,7 +107,8 @@ async def main():
     await start_interactive_session(serialPort)
     await open_shutter(serialPort)
     await close_shutter(serialPort)
-    await set_exposure_time(serialPort, 1000)
+    await set_exposure_time(serialPort, 5000)
+    await reset_fd(serialPort)
 
 
 asyncio.run(main())
