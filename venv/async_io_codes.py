@@ -107,7 +107,7 @@ async def main():
     await start_interactive_session(serialPort)
     await open_shutter(serialPort)
     await close_shutter(serialPort)
-    await set_exposure_time(serialPort, 300)
+    await set_exposure_time(serialPort, 1000)
 
 
 asyncio.run(main())
