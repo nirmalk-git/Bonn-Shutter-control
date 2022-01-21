@@ -85,5 +85,5 @@ async def main():
     await Bonn_shutter.close_shutter()
     await Bonn_shutter.set_exposure_time(300)
 
-
+# running the code
 asyncio.run(main())
