@@ -104,7 +104,6 @@ def set_exposure_time(serialPort, exp_time):
         time.sleep((exp_time / 1000))
         close_shutter(serialPort)
 
-
 list_ports()
 serialPort = init_serialport("COM7", 19200, 8)
 start_interactive_session(serialPort)
