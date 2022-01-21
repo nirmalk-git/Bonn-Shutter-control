@@ -114,7 +114,6 @@ async def main():
 asyncio.run(main())
 # serialPort = init_serialport('COM7', 19200, 8)
 
-
 '''start_interactive_session(serialPort)
 open_shutter(serialPort)
 close_shutter(serialPort)
